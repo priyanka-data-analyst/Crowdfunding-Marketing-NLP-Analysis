@@ -1,0 +1,62 @@
+' ==========================================
+' EXCEL VBA: CAMPAIGN VALIDATOR MACRO
+' Project: Crowdfunding Campaign Analysis
+' ==========================================
+
+Sub AnalyzeCampaigns()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+    Dim sentimentCol As Integer
+    Dim goalCol As Integer
+    Dim riskCount As Integer
+    
+    ' Set the worksheet to the first sheet
+    Set ws = ThisWorkbook.Sheets(1)
+    
+    ' Find the last row of data to set the loop range
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    
+    ' 1. FIND THE COLUMN NUMBERS AUTOMATICALLY
+    ' This ensures the script works even if columns are moved
+    On Error Resume Next
+    sentimentCol = ws.Rows(1).Find("Sentiment_Score").Column
+    goalCol = ws.Rows(1).Find("goal").Column
+    On Error GoTo 0
+    
+    If sentimentCol = 0 Or goalCol = 0 Then
+        MsgBox "Error: Could not find 'Sentiment_Score' or 'goal' columns."
+        Exit Sub
+    End If
+    
+    ' 2. LOOP THROUGH EVERY ROW TO APPLY BUSINESS LOGIC
+    riskCount = 0
+    Application.ScreenUpdating = False ' Turn off screen flicker for speed
+    
+    For i = 2 To lastRow
+        
+        ' RULE 1: If Sentiment is Negative (< 0), turn Text RED (NLP Insight)
+        If ws.Cells(i, sentimentCol).Value < 0 Then
+            ws.Cells(i, sentimentCol).Font.Color = vbRed
+            ws.Cells(i, sentimentCol).Font.Bold = True
+        End If
+        
+        ' RULE 2: If Goal is > $50,000, Highlight Row YELLOW (Financial Risk)
+        If ws.Cells(i, goalCol).Value > 50000 Then
+            ws.Range(ws.Cells(i, 1), ws.Cells(i, 15)).Interior.Color = RGB(255, 255, 204) 
+            riskCount = riskCount + 1
+        End If
+        
+        ' RULE 3: Format Goal as Currency for better readability
+        ws.Cells(i, goalCol).NumberFormat = "$#,##0"
+        
+    Next i
+    
+    Application.ScreenUpdating = True
+    
+    ' 3. USER NOTIFICATION
+    MsgBox "Analysis Complete!" & vbNewLine & _
+           "Scanned " & lastRow & " campaigns." & vbNewLine & _
+           "Identified " & riskCount & " High-Risk Campaigns (Goal > $50k).", vbInformation
+           
+End Sub
