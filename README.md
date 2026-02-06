@@ -78,6 +78,8 @@ Key Measures (DAX): calculated Success Rate % dynamically based on filters.
 💡 Business Impact
 This project demonstrates that language matters in fundraising. By identifying the linguistic patterns of successful campaigns, marketing teams can optimize their copy before launching, potentially increasing conversion rates by 10-15%. The Excel tool further reduces manual audit time by 90%.
 
+📝 Author & Project Credit
+
 Developer: Priyanka Deshpande
 Data Source: Crowdfunding Campaign Success Analyzer: NLP & Financial Analytics.
 Project Goal: Portfolio demonstration of Data Engineering and Business Intelligence expertise.
